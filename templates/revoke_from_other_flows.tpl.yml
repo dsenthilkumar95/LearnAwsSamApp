@@ -1,0 +1,32 @@
+RevokeFromOtherFlowsLambda:
+  Type: AWS::Serverless::Function
+  Properties:
+    Timeout: 600
+    FunctionName: !Sub "revoke-from-other-flows-${Environment}"
+    Handler: revoking.lambda_handler
+    Description: Lambda for revoking media from older flows
+    CodeUri: lambda_functions/revoke_from_other_flows
+    Role: !Ref LambdaRole
+    Tags:
+      customer: 'OCS'
+    Events:
+      UnpublishSNSEvent:
+        Type: SNS
+        Properties:
+          Region: !Ref RevokeSNSTopicRegion
+          Topic: !Sub "arn:aws:sns:eu-west-2:701984544886:ocs-${Environment}-profile-result-ntfy"
+    Environment:
+      Variables:
+        MPX_AUTH_REGION: 'EU3'
+        REVOKE_PROFILE_GUID: "urn:cts:nbcr:ocs:guid:publish:publishprofile:shared:unpublish-from-previous-flows"
+        LONDON_WORKFLOW_GUID: "urn:cts:nbcr:ocs:guid:publish:publishprofile:london:step-01:1.0.0"
+        MAIN_WORKFLOW_GUID: "urn:cts:nbcr:ocs:guid:publish:publishprofile:main:step-01:1.3.0"
+        LEGACY_WORKFLOW_GUID: "urn:cts:nbcr:ocs:guid:publish:publishprofile:main:step-01:1.1.0"
+
+FunctionLogGroupLambda:
+  Type: AWS::Logs::LogGroup
+  DependsOn:
+    - RevokeFromOtherFlowsLambda
+  Properties:
+    RetentionInDays: 14
+    LogGroupName: !Join ["", ["/aws/lambda/", !Ref RevokeFromOtherFlowsLambda]]

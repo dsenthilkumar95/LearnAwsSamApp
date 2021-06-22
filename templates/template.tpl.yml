@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: OCS Lambdas SAM app
+Parameters:
+  LambdaRole:
+    Type: 'String'
+    Default: 'arn:aws:iam::701984544886:role/OneCloud/Lambda'
+  Environment:
+    Description: 'Required. The environment name dev|stage|prod'
+    Type: 'String'
+  MPXRegion:
+    Description: 'The MPX region'
+    Type: 'String'
+    AllowedValues:
+      - eu
+      - com
+    Default: 'eu'
+  MPXUsername:
+    Description: 'Required. The MPX username'
+    Type: 'String'
+  MPXPassword:
+    Description: 'Required. The MPX password'
+    Type: 'String'
+  MPXAccount:
+    Description: 'Required. The MPX account name'
+    Type: 'String'
+  LOGLevel:
+    Description: 'Required. The Log level'
+    Type: 'String'
+    Default: INFO
+  RevokeSNSTopicRegion:
+    Description: 'Required. ocs-<env>-profile-result-ntfy topic region'
+    Type: 'String'
+
+Globals:
+  Function:
+    Timeout: 600
+    Runtime: python3.7
+    Layers:
+      - !Ref LambdaLayers
+    MemorySize: 512
+    Environment:
+      Variables:
+        ENVIRONMENT: !Ref Environment
+        MPX_REGION: !Ref MPXRegion
+        MPX_USERNAME: !Ref MPXUsername
+        MPX_PASSWORD: !Ref MPXPassword
+        MPX_ACCOUNT: !Ref MPXAccount
+        LOG_LEVEL: !Ref LOGLevel
+
+Resources:
+{% filter indent(width=2) %}
+{% include 'revoke_from_other_flows.tpl.yml' %}
+{% endfilter %}
+
+  # Layer
+  LambdaLayers:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: 'ocs-lambda-layers'
+      Description: Layer using sam
+      ContentUri: lambda_layers/lambdas-sam.zip
+      CompatibleRuntimes:
+        - python3.7

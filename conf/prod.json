@@ -1,0 +1,24 @@
+{
+  "Parameters": [
+    {
+      "ParameterKey": "MPXUsername",
+      "ParameterValue": "mpx/ocs-lambdas-sam-prod@comcast.com"
+    },
+    {
+      "ParameterKey": "MPXAccountName",
+      "ParameterValue": "NBCR - OCS Prod"
+    },
+    {
+      "ParameterKey": "LOGLevel",
+      "ParameterValue": "DEBUG"
+    },
+    {
+      "ParameterKey": "MPXAccount",
+      "ParameterValue": "http://access.auth.theplatform.com/data/Account/2703231829"
+    },
+    {
+      "ParameterKey": "RevokeSNSTopicRegion",
+      "ParameterValue": "eu-west-2"
+    }
+  ]
+}
